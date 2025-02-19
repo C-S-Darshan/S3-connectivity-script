@@ -1,105 +1,166 @@
-# S3-connectivity-script
+# S3 Connectivity Script
 
-Steps
-1. Update packages and install Mosquitto
-##Update packages
+This guide walks you through setting up an MQTT broker using Mosquitto, configuring AWS S3 to store MQTT messages, and running a Python script to handle the connectivity. It covers package installations, AWS CLI setup, and script execution.
+
+Follow the steps below to get everything set up properly.
+
+---
+
+## Steps to Set Up and Run the Script
+
+### 1. Update and Install Required Packages
+
+#### Update System Packages
+
 ```bash
 sudo apt update
 ```
 
-##Install package updates
+#### Upgrade Installed Packages
+
 ```bash
 sudo apt upgrade -y
 ```
 
-##Install Mosquitto MQTT
+#### Install Mosquitto MQTT Broker
+
 ```bash
 sudo apt install mosquitto mosquitto-clients -y
 ```
-> **Note:**Make sure to edit security inbound rules to allow messages on selected port**.
-##Modify Mosquitto MQTT Conf
+
+> **Note:** Ensure that the security inbound rules allow messages on the selected port.
+
+---
+
+### 2. Configure Mosquitto MQTT
+
+#### Modify Mosquitto Configuration
+
+Edit the configuration file and allow external connections:
+
 ```bash
 listener 1883 0.0.0.0
 allow_anonymous true
 ```
+> **Note:** To save and exit, press Ctrl + X, then Y, and press Enter.
 
-##Restart Mosquitto
+#### Restart Mosquitto Service
+
 ```bash
 sudo systemctl restart mosquitto
 ```
 
-##Ensure that Mosquitto is running
+#### Verify Mosquitto is Running
+
 ```bash
 sudo systemctl status mosquitto
 ```
 
-##Testing if Mosquito by subscribing and publishing a message
+#### Test MQTT Messaging
+
+Subscribe to a test topic:
+
 ```bash
 mosquitto_sub -h localhost -t sensorData
 ```
+
+Publish a test message:
+
 ```bash
 mosquitto_pub -h localhost -t sensorData -m "Hello MQTT"
 ```
 
-> **Note:**Create a new user and directly add previlages for "AmazonS3FullAccess"**.
-##Installing AWS CLI
+---
+
+### 3. Set Up AWS CLI for S3
+
+> **Note:** Create a new IAM user with the **"AmazonS3FullAccess"** permission.
+
+#### Install AWS CLI
+
 ```bash
-sudo snap install aws-cli –classic
+sudo snap install aws-cli --classic
 ```
 
-##Add your user access details
+#### Configure AWS CLI with User Credentials
+
 ```bash
 aws configure
 ```
-> **Note:**Enter Access key, secret key, region and json**.
 
-##Test Configuration
+> **Input the AWS Access Key, Secret Key, Region, and set output format to JSON.**
+
+#### Verify AWS Configuration
+
 ```bash
 aws s3 ls
 ```
 
-##installing pip for required python packages
+---
+
+### 4. Install Python and Dependencies
+
+#### Install `pip`
+
 ```bash
 sudo apt install python3-pip
 ```
 
-##Installing virtual environment to ease up setup
+#### Install Virtual Environment
+
 ```bash
 sudo apt install python3-venv
 ```
-##Creating a virtual environment to ease up setup
+
+#### Create and Activate Virtual Environment
+
 ```bash
 python3 -m venv myenv
 ```
-
-##Activating the virtual environment
 ```bash
 source myenv/bin/activate
 ```
-##Installing packages required to run script
+
+#### Install Required Python Packages
+
 ```bash
 pip install boto3 paho-mqtt
 ```
 
-##Creating directory for script
- ```bash
+---
+
+### 5. Create and Run the Script
+
+#### Create a Directory for the Script
+
+```bash
 mkdir ~/scripts
 ```
 ```bash
 cd ~/scripts
 ```
 
-##Creating the script to connect to S3
+#### Create the MQTT-to-S3 Script
+
 ```bash
 nano mqtt_to_s3.py
 ```
+> **Note:** Copy and paste the python code in the repo. Once done press Ctrl + X, then Y, and press Enter.
 
-##Running the script
+#### Run the Script
+
 ```bash
 python mqtt_to_s3.py
 ```
 
-##Testing S3 connectivity by publishing message
+---
+
+### 6. Test MQTT to S3 Connectivity
+
+#### Publish a Test Message
+
 ```bash
 mosquitto_pub -h 51.20.85.183 -t test -m '{"DeviceID": "Device1", "Timestamp": "2025-02-06T12:00:00Z", "Data": "SampleData"}'
 ```
+> **Note:** Check S3 bucket to ensure data is being stored.
+---
