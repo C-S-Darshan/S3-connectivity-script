@@ -34,6 +34,12 @@ sudo apt install mosquitto mosquitto-clients -y
 
 ### 2. Configure Mosquitto MQTT
 
+#### Access Mosquitto Configuration
+
+```bash
+sudo nano /etc/mosquitto/mosquitto.conf
+```
+
 #### Modify Mosquitto Configuration
 
 Edit the configuration file and allow external connections:
